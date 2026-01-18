@@ -1,12 +1,20 @@
 from pydantic import BaseModel, Field
-from typing import Dict
+from typing import Dict, Union, List, Any
 
 class DiagnosisRequest(BaseModel):
-    # 拡張性のため、具体的な変数名ではなく辞書型で受け取る
-    # 例: {"Overworked": true, "SleepDeprived": false, "NewItem": true}
-    evidence: Dict[str, bool] = Field(..., description="観測された証拠の辞書")
+    # 値は bool だけでなく float (睡眠時間) も許容する
+    evidence: Dict[str, Union[bool, float]] = Field(...)
+
+class ImprovementItem(BaseModel):
+    factor: str
+    reduction: float
+    advice: str
 
 class DiagnosisResponse(BaseModel):
-    risk_score: float = Field(..., description="リスク発生確率(0-1)")
-    risk_level: str = Field(..., description="SAFE, WARNING, DANGER")
-    advice: str = Field(..., description="アドバイスメッセージ")
+    risk_score: float
+    risk_level: str
+    advice: str
+    improvements: List[ImprovementItem] # 追加: 改善提案リスト
+
+class FeedbackRequest(BaseModel):
+    is_correct: bool
