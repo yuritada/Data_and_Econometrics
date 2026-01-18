@@ -9,6 +9,7 @@ from typing import Dict
 from pgmpy.models import DiscreteBayesianNetwork
 from pgmpy.factors.discrete import TabularCPD
 from pgmpy.inference import VariableElimination
+from fastapi.middleware.cors import CORSMiddleware
 
 # ==========================================
 # 1. ベイジアンネットワークモデルの構築クラス
@@ -100,6 +101,22 @@ app = FastAPI(
     title="Bayesian Risk Diagnostics API",
     description="ベイジアンネットワークを用いたリスク診断API",
     version="1.0.0"
+)
+
+
+# ▼▼▼ ここを追加してください ▼▼▼
+# フロントエンド(http://localhost:3000)からのアクセスを許可する設定
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # 本番環境では特定のドメインのみに絞る
+    allow_credentials=True,
+    allow_methods=["*"],    # すべてのメソッド(POST, GETなど)を許可
+    allow_headers=["*"],    # すべてのヘッダーを許可
 )
 
 # モデルをグローバル変数として保持（起動時に一度だけロード）
